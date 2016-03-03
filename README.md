@@ -46,6 +46,30 @@ memoizedGet({
 
 ```
 
+## Sync lru-memoizer
+
+Use `memoizer.sync` to cache things that are slow to calculate or methods returning promises.
+
+```
+var memoizer = require('lru-memoizer');
+var memoizedGet = memoizer.sync({
+  //defines how to load the resource when
+  //it is not in the cache.
+  load: function (params) {
+    //return something_hard_to_compute;s
+  },
+
+  //defines how to create a cache key from the params.
+  hash: function (params) {
+    return params.foo;
+  },
+
+  //all other params for the LRU cache.
+  max: 100,
+  maxAge: 1000 * 60
+});
+```
+
 ## Similar modules
 
 This module is very similar to [async-cache](https://github.com/isaacs/async-cache), the main difference is the `hash` function.

@@ -37,3 +37,32 @@ module.exports = function (options) {
 
   return result;
 };
+
+
+module.exports.sync = function (options) {
+  var cache = new LRU(_.pick(options, lru_params));
+  var load = options.load;
+  var hash = options.hash;
+
+  var result = function () {
+    var args = _.toArray(arguments);
+
+    var key = hash.apply(options, args);
+
+    var fromCache = cache.get(key);
+
+    if (fromCache) {
+      return fromCache;
+    }
+
+    var result = load.apply(null, args);
+
+    cache.set(key, result);
+
+    return result;
+  };
+
+  result.keys = cache.keys.bind(cache);
+
+  return result;
+};
