@@ -12,7 +12,14 @@ module.exports = function (options) {
     var parameters = args.slice(0, -1);
     var callback = args.slice(-1).pop();
 
-    var key = hash.apply(options, parameters);
+    var key;
+
+    if (parameters.length === 0 && !hash) {
+      //the load function only receives callback.
+      key = '_';
+    } else {
+      key = hash.apply(options, parameters);
+    }
 
     var fromCache = cache.get(key);
 

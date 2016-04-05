@@ -39,7 +39,7 @@ describe('lru-memoizer', function () {
 
   });
 
-  it('shuld use the hash function for keys', function (done) {
+  it('should use the hash function for keys', function (done) {
     memoized(1, 2, function () {
       memoized(2,3, function () {
         assert.includeMembers(memoized.keys(), ['1-2', '2-3']);
