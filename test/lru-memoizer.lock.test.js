@@ -25,9 +25,10 @@ describe('lru-simultaneos calls', function () {
   it('should call once', function (done) {
     memoized(1, 2, _.noop);
     memoized(1, 2, _.noop);
-    memoized(1, 2, function (err) {
+    memoized(1, 2, function (err, result) {
       if (err) { return done(err); }
-      assert.equal(loadTimes, 1);
+      assert.strictEqual(loadTimes, 1);
+      assert.strictEqual(result, 3);
       done();
     });
   });

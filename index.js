@@ -29,7 +29,7 @@ module.exports = function (options) {
       var fromCache = cache.get(key);
 
       if (fromCache) {
-        return release_and_callback(null, fromCache);
+        return release_and_callback.apply(null, [null].concat(fromCache));
       }
 
       load.apply(null, parameters.concat(function (err) {

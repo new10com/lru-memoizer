@@ -27,12 +27,12 @@ describe('lru-memoizer', function () {
   it('should cache the result of an async function', function (done) {
     memoized(1,2, function (err, result) {
       assert.isNull(err);
-      assert.equal(result, 3);
-      assert.equal(loadTimes, 1);
+      assert.strictEqual(result, 3);
+      assert.strictEqual(loadTimes, 1);
       memoized(1,2, function (err, result) {
         assert.isNull(err);
-        assert.equal(result, 3);
-        assert.equal(loadTimes, 1);
+        assert.strictEqual(result, 3);
+        assert.strictEqual(loadTimes, 1);
         done();
       });
     });
