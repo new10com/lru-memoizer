@@ -55,4 +55,6 @@ describe('lru-memoizer', function () {
       done();
     });
   });
+
 });
+

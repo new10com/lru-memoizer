@@ -1,7 +1,7 @@
 var memoizer = require('./..');
 var assert = require('chai').assert;
 
-describe.only('lru-memoizer', function () {
+describe('lru-memoizer (no key)', function () {
   var loadTimes = 0, memoized;
 
   beforeEach(function () {

@@ -1,16 +1,18 @@
-const LRU = require('lru-cache');
-const _ = require('lodash');
-const lru_params =  [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
+const LRU        = require('lru-cache');
+const _          = require('lodash');
+const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
+const Lock       = require('lock');
 
 module.exports = function (options) {
-  var cache = new LRU(_.pick(options, lru_params));
-  var load = options.load;
-  var hash = options.hash;
+  const cache = new LRU(_.pick(options, lru_params));
+  const load  = options.load;
+  const hash  = options.hash;
+  const lock  = Lock();
 
-  var result = function () {
-    var args = _.toArray(arguments);
-    var parameters = args.slice(0, -1);
-    var callback = args.slice(-1).pop();
+  const result = function () {
+    const args       = _.toArray(arguments);
+    const parameters = args.slice(0, -1);
+    const callback   = args.slice(-1).pop();
 
     var key;
 
@@ -21,22 +23,26 @@ module.exports = function (options) {
       key = hash.apply(options, parameters);
     }
 
-    var fromCache = cache.get(key);
+    lock(key, function (release) {
+      const release_and_callback = release(callback);
 
-    if (fromCache) {
-      return setImmediate.apply(null, [callback, null].concat(fromCache));
-    }
+      var fromCache = cache.get(key);
 
-    load.apply(null, parameters.concat(function (err) {
-      if (err) {
-        return callback(err);
+      if (fromCache) {
+        return release_and_callback(null, fromCache);
       }
 
-      cache.set(key, _.toArray(arguments).slice(1));
+      load.apply(null, parameters.concat(function (err) {
+        if (err) {
+          return release_and_callback(err);
+        }
 
-      return callback.apply(null, arguments);
+        cache.set(key, _.toArray(arguments).slice(1));
 
-    }));
+        return release_and_callback.apply(null, arguments);
+
+      }));
+    });
 
   };
 
