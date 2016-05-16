@@ -32,17 +32,12 @@ module.exports = function (options) {
       loading.set(key, []);
 
       load.apply(null, parameters.concat(function (err) {
-        if (err) {
-          loading.get(key).forEach(function (callback) {
-            callback(err);
-          });
-          loading.delete(key);
-          return callback(err);
-        }
-
         const args = _.toArray(arguments);
 
-        cache.set(key, args.slice(1));
+        //we store the result only if the load didn't fail.
+        if (!err) {
+          cache.set(key, args.slice(1));
+        }
 
         //immediately call every other callback waiting
         loading.get(key).forEach(function (callback) {
