@@ -1,13 +1,12 @@
 const LRU        = require('lru-cache');
 const _          = require('lodash');
 const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
-const Lock       = require('lock');
 
 module.exports = function (options) {
   const cache = new LRU(_.pick(options, lru_params));
   const load  = options.load;
   const hash  = options.hash;
-  const lock  = Lock();
+  const loading  = new Map();
 
   const result = function () {
     const args       = _.toArray(arguments);
@@ -23,27 +22,41 @@ module.exports = function (options) {
       key = hash.apply(options, parameters);
     }
 
-    lock(key, function (release) {
-      const release_and_callback = release(callback);
+    var fromCache = cache.get(key);
 
-      var fromCache = cache.get(key);
+    if (fromCache) {
+      return callback.apply(null, [null].concat(fromCache));
+    }
 
-      if (fromCache) {
-        return release_and_callback.apply(null, [null].concat(fromCache));
-      }
+    if (!loading.get(key)) {
+      loading.set(key, []);
 
       load.apply(null, parameters.concat(function (err) {
         if (err) {
-          return release_and_callback(err);
+          loading.get(key).forEach(function (callback) {
+            callback(err);
+          });
+          loading.delete(key);
+          return callback(err);
         }
 
-        cache.set(key, _.toArray(arguments).slice(1));
+        const args = _.toArray(arguments);
 
-        return release_and_callback.apply(null, arguments);
+        cache.set(key, args.slice(1));
 
+        //immediately call every other callback waiting
+        loading.get(key).forEach(function (callback) {
+          callback.apply(null, args);
+        });
+
+        loading.delete(key);
+        /////////
+
+        callback.apply(null, args);
       }));
-    });
-
+    } else {
+      loading.get(key).push(callback);
+    }
   };
 
   result.keys = cache.keys.bind(cache);
