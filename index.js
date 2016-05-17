@@ -8,6 +8,10 @@ module.exports = function (options) {
   const hash  = options.hash;
   const loading  = new Map();
 
+  if (options.disable) {
+    return options.load;
+  }
+
   const result = function () {
     const args       = _.toArray(arguments);
     const parameters = args.slice(0, -1);
