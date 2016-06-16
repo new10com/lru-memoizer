@@ -3,27 +3,33 @@ const _          = require('lodash');
 const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
 
 module.exports = function (options) {
-  const cache = new LRU(_.pick(options, lru_params));
-  const load  = options.load;
-  const hash  = options.hash;
+  const cache   = new LRU(_.pick(options, lru_params));
+  const load    = options.load;
+  const hash    = options.hash;
+  const bypass  = options.bypass;
   const loading  = new Map();
 
   if (options.disable) {
-    return options.load;
+    return load;
   }
 
   const result = function () {
     const args       = _.toArray(arguments);
     const parameters = args.slice(0, -1);
     const callback   = args.slice(-1).pop();
+    const self       = this;
 
     var key;
+
+    if (bypass && bypass.apply(self, parameters)) {
+      return load.apply(self, args);
+    }
 
     if (parameters.length === 0 && !hash) {
       //the load function only receives callback.
       key = '_';
     } else {
-      key = hash.apply(options, parameters);
+      key = hash.apply(self, parameters);
     }
 
     var fromCache = cache.get(key);
@@ -35,7 +41,7 @@ module.exports = function (options) {
     if (!loading.get(key)) {
       loading.set(key, []);
 
-      load.apply(null, parameters.concat(function (err) {
+      load.apply(self, parameters.concat(function (err) {
         const args = _.toArray(arguments);
 
         //we store the result only if the load didn't fail.
@@ -65,14 +71,25 @@ module.exports = function (options) {
 
 
 module.exports.sync = function (options) {
-  var cache = new LRU(_.pick(options, lru_params));
-  var load = options.load;
-  var hash = options.hash;
+  const cache = new LRU(_.pick(options, lru_params));
+  const load = options.load;
+  const hash = options.hash;
+  const disable = options.disable;
+  const bypass = options.bypass;
+  const self = this;
 
-  var result = function () {
+  if (disable) {
+    return load;
+  }
+
+  const result = function () {
     var args = _.toArray(arguments);
 
-    var key = hash.apply(options, args);
+    if (bypass && bypass.apply(self, arguments)) {
+      return load.apply(self, arguments);
+    }
+
+    var key = hash.apply(self, args);
 
     var fromCache = cache.get(key);
 
@@ -80,7 +97,7 @@ module.exports.sync = function (options) {
       return fromCache;
     }
 
-    var result = load.apply(null, args);
+    var result = load.apply(self, args);
 
     cache.set(key, result);
 
