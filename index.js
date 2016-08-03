@@ -3,11 +3,12 @@ const _          = require('lodash');
 const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
 
 module.exports = function (options) {
-  const cache   = new LRU(_.pick(options, lru_params));
-  const load    = options.load;
-  const hash    = options.hash;
-  const bypass  = options.bypass;
-  const loading  = new Map();
+  const cache      = new LRU(_.pick(options, lru_params));
+  const load       = options.load;
+  const hash       = options.hash;
+  const bypass     = options.bypass;
+  const itemMaxAge = options.itemMaxAge;
+  const loading    = new Map();
 
   if (options.disable) {
     return load;
@@ -46,7 +47,12 @@ module.exports = function (options) {
 
         //we store the result only if the load didn't fail.
         if (!err) {
-          cache.set(key, args.slice(1));
+          const result = args.slice(1);
+          if (itemMaxAge) {
+            cache.set(key, result, itemMaxAge(result));
+          } else {
+            cache.set(key, result);
+          }
         }
 
         //immediately call every other callback waiting
@@ -77,6 +83,7 @@ module.exports.sync = function (options) {
   const disable = options.disable;
   const bypass = options.bypass;
   const self = this;
+  const itemMaxAge = options.itemMaxAge;
 
   if (disable) {
     return load;
@@ -97,9 +104,12 @@ module.exports.sync = function (options) {
       return fromCache;
     }
 
-    var result = load.apply(self, args);
-
-    cache.set(key, result);
+    const result = load.apply(self, args);
+    if (itemMaxAge) {
+      cache.set(key, result, itemMaxAge(result));
+    } else {
+      cache.set(key, result);
+    }
 
     return result;
   };
