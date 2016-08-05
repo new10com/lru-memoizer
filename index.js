@@ -49,7 +49,7 @@ module.exports = function (options) {
         if (!err) {
           const result = args.slice(1);
           if (itemMaxAge) {
-            cache.set(key, result, itemMaxAge(result));
+            cache.set(key, result, itemMaxAge.apply(self, parameters.concat(result)));
           } else {
             cache.set(key, result);
           }
@@ -106,7 +106,7 @@ module.exports.sync = function (options) {
 
     const result = load.apply(self, args);
     if (itemMaxAge) {
-      cache.set(key, result, itemMaxAge(result));
+      cache.set(key, result, itemMaxAge.apply(self, args.concat([ result ])));
     } else {
       cache.set(key, result);
     }
