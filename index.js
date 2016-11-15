@@ -11,6 +11,7 @@ module.exports = function (options) {
   const loading    = new Map();
 
   if (options.disable) {
+      _.extend(load, { del }, options);
     return load;
   }
 

@@ -40,5 +40,10 @@ describe('lru-memoizer (disabled)', function () {
 
   });
 
+
+  it('should expose hash function', function() {
+    assert.equal(memoized.hash(1, 2), '1-2');
+  });
+
 });
 
