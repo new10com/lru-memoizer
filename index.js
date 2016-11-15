@@ -14,6 +14,11 @@ module.exports = function (options) {
     return load;
   }
 
+  function del() {
+    const key = hash.apply(this, arguments);
+    cache.del(key);
+  }
+
   const result = function () {
     const args       = _.toArray(arguments);
     const parameters = args.slice(0, -1);
@@ -71,6 +76,8 @@ module.exports = function (options) {
   };
 
   result.keys = cache.keys.bind(cache);
+
+  _.extend(result, { del }, options);
 
   return result;
 };

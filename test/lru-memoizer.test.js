@@ -56,5 +56,33 @@ describe('lru-memoizer', function () {
     });
   });
 
+  it('should expose the hash function', function() {
+    assert.equal(memoized.hash(0, 2), '0-2');
+  });
+
+  it('should expose the load function', function(done) {
+    memoized.load(1, 2, (err, result) => {
+      assert.equal(result, 3);
+      done();
+    });
+  });
+
+  it('should expose the max prop', function() {
+    assert.equal(memoized.max, 10);
+  });
+
+  it('should allow to del a key', function(done) {
+    memoized(1,2, () => {
+      assert.strictEqual(loadTimes, 1);
+      memoized.del(1,2);
+      memoized(1,2, (err, result) => {
+        assert.isNull(err);
+        assert.strictEqual(result, 3);
+        assert.strictEqual(loadTimes, 2);
+        done();
+      });
+    });
+  });
+
 });
 
