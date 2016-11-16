@@ -1,6 +1,7 @@
 const LRU        = require('lru-cache');
 const _          = require('lodash');
 const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
+const deepFreeze = require('deep-freeze-node');
 
 module.exports = function (options) {
   const cache      = new LRU(_.pick(options, lru_params));
@@ -8,6 +9,7 @@ module.exports = function (options) {
   const hash       = options.hash;
   const bypass     = options.bypass;
   const itemMaxAge = options.itemMaxAge;
+  const freeze      = options.freeze;
   const loading    = new Map();
 
   if (options.disable) {
@@ -49,11 +51,14 @@ module.exports = function (options) {
       loading.set(key, []);
 
       load.apply(self, parameters.concat(function (err) {
-        const args = _.toArray(arguments);
+        const args = Array.from(arguments);
 
         //we store the result only if the load didn't fail.
         if (!err) {
           const result = args.slice(1);
+          if (freeze) {
+            args.forEach(deepFreeze);
+          }
           if (itemMaxAge) {
             cache.set(key, result, itemMaxAge.apply(self, parameters.concat(result)));
           } else {

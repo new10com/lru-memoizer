@@ -33,6 +33,5 @@ describe('lru-memoizer (bypass)', function () {
       });
     });
   });
-
 });
 

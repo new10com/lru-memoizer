@@ -14,6 +14,8 @@ The `load` function can have N parameters and the last one must be a callback. T
 
 The `hash` function purpose is generate a custom hash for storing results. It has all the arguments applied to it minus the callback, and must return an string synchronous.
 
+The `freeze` option (defaults to **false**) allows you to deep-freeze the result of the async function.
+
 ## Usage
 
 ```javascript
