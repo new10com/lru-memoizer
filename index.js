@@ -1,7 +1,7 @@
 const LRU        = require('lru-cache');
 const _          = require('lodash');
 const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
-const deepFreeze = require('deep-freeze-node');
+const deepFreeze = require('./lib/freeze');
 
 module.exports = function (options) {
   const cache      = new LRU(_.pick(options, lru_params));
