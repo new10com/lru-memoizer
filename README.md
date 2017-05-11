@@ -16,6 +16,8 @@ The `hash` function purpose is generate a custom hash for storing results. It ha
 
 The `freeze` option (defaults to **false**) allows you to deep-freeze the result of the async function.
 
+The `clone` option (defaults to **false**) allows you to deep-clone the result every time is returned from the cache.
+
 ## Usage
 
 ```javascript

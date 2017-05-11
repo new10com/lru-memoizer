@@ -9,7 +9,8 @@ module.exports = function (options) {
   const hash       = options.hash;
   const bypass     = options.bypass;
   const itemMaxAge = options.itemMaxAge;
-  const freeze      = options.freeze;
+  const freeze     = options.freeze;
+  const clone      = options.clone;
   const loading    = new Map();
 
   if (options.disable) {
@@ -44,6 +45,9 @@ module.exports = function (options) {
     var fromCache = cache.get(key);
 
     if (fromCache) {
+      if (clone) {
+        return callback.apply(null, [null].concat(fromCache).map(_.cloneDeep));
+      }
       return callback.apply(null, [null].concat(fromCache));
     }
 
@@ -67,14 +71,16 @@ module.exports = function (options) {
         }
 
         //immediately call every other callback waiting
-        loading.get(key).forEach(function (callback) {
+        const waiting = loading.get(key).concat(callback);
+        loading.delete(key);
+        waiting.forEach(function (callback) {
+          if (clone) {
+            return callback.apply(null, args.map(_.cloneDeep));
+          }
           callback.apply(null, args);
         });
-
-        loading.delete(key);
         /////////
 
-        callback.apply(null, args);
       }));
     } else {
       loading.get(key).push(callback);
