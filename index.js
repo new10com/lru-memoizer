@@ -2,6 +2,7 @@ const LRU        = require('lru-cache');
 const _          = require('lodash');
 const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
 const deepFreeze = require('./lib/freeze');
+const vfs        = require('very-fast-args');
 
 module.exports = function (options) {
   const cache      = new LRU(_.pick(options, lru_params));
@@ -24,7 +25,7 @@ module.exports = function (options) {
   }
 
   const result = function () {
-    const args       = _.toArray(arguments);
+    const args       = vfs.apply(null, arguments);
     const parameters = args.slice(0, -1);
     const callback   = args.slice(-1).pop();
     const self       = this;
@@ -55,7 +56,7 @@ module.exports = function (options) {
       loading.set(key, []);
 
       load.apply(self, parameters.concat(function (err) {
-        const args = Array.from(arguments);
+        const args = vfs.apply(null, arguments);
 
         //we store the result only if the load didn't fail.
         if (!err) {
