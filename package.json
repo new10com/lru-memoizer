@@ -1,11 +1,11 @@
 {
-  "name": "lru-memoizer",
+  "name": "@new10com/lru-memoizer",
   "description": "Memoize functions results using an lru-cache.",
   "version": "1.12.0",
   "author": "José F. Romaniello <jfromaniello@gmail.com> (http://joseoncode.com)",
   "types": "./types/lru-memoizer.d.ts",
   "repository": {
-    "url": "git://github.com/jfromaniello/lru-memoizer.git"
+    "url": "https://github.com/new10com/lru-memoizer"
   },
   "keywords": [
     "cache",
