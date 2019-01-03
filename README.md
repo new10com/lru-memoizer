@@ -8,6 +8,8 @@ npm i lru-memoizer --save
 
 ## Intro
 
+**Forked from https://github.com/jfromaniello/lru-memoizer**
+
 This module uses an [lru-cache](https://github.com/isaacs/node-lru-cache) internally to cache the results of an async function.
 
 The `load` function can have N parameters and the last one must be a callback. The callback should be an errback (first parameter is `err`).
