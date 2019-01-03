@@ -1,11 +1,14 @@
 const LRU        = require('lru-cache');
-const _          = require('lodash');
 const lru_params = [ 'max', 'maxAge', 'length', 'dispose', 'stale' ];
 const deepFreeze = require('./lib/freeze');
 const vfs        = require('very-fast-args');
+const _assignIn    = require('lodash.assignin');
+const _pick      = require('lodash.pick');
+const _cloneDeep = require('lodash.clonedeep');
+const _toArray   = require('lodash.toarray');
 
 module.exports = function (options) {
-  const cache      = new LRU(_.pick(options, lru_params));
+  const cache      = new LRU(_pick(options, lru_params));
   const load       = options.load;
   const hash       = options.hash;
   const bypass     = options.bypass;
@@ -15,7 +18,7 @@ module.exports = function (options) {
   const loading    = new Map();
 
   if (options.disable) {
-      _.extend(load, { del }, options);
+      _assignIn(load, { del }, options);
     return load;
   }
 
@@ -47,7 +50,7 @@ module.exports = function (options) {
 
     if (fromCache) {
       if (clone) {
-        return callback.apply(null, [null].concat(fromCache).map(_.cloneDeep));
+        return callback.apply(null, [null].concat(fromCache).map(_cloneDeep));
       }
       return callback.apply(null, [null].concat(fromCache));
     }
@@ -76,7 +79,7 @@ module.exports = function (options) {
         loading.delete(key);
         waiting.forEach(function (callback) {
           if (clone) {
-            return callback.apply(null, args.map(_.cloneDeep));
+            return callback.apply(null, args.map(_cloneDeep));
           }
           callback.apply(null, args);
         });
@@ -90,14 +93,14 @@ module.exports = function (options) {
 
   result.keys = cache.keys.bind(cache);
 
-  _.extend(result, { del }, options);
+  _assignIn(result, { del }, options);
 
   return result;
 };
 
 
 module.exports.sync = function (options) {
-  const cache = new LRU(_.pick(options, lru_params));
+  const cache = new LRU(_pick(options, lru_params));
   const load = options.load;
   const hash = options.hash;
   const disable = options.disable;
@@ -110,7 +113,7 @@ module.exports.sync = function (options) {
   }
 
   const result = function () {
-    var args = _.toArray(arguments);
+    var args = _toArray(arguments);
 
     if (bypass && bypass.apply(self, arguments)) {
       return load.apply(self, arguments);
