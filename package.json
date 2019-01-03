@@ -8,6 +8,7 @@
   "repository": {
     "url": "https://github.com/new10com/lru-memoizer"
   },
+  "private": false,
   "keywords": [
     "cache",
     "memoize",
