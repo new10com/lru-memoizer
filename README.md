@@ -3,7 +3,7 @@ Memoize functions results using an lru-cache.
 ## Installation
 
 ```
-npm i lru-memoizer --save
+npm i @new10com/lru-memoizer
 ```
 
 ## Intro
@@ -24,7 +24,7 @@ The `clone` option (defaults to **false**) allows you to deep-clone the result e
 
 ```javascript
 
-var memoizer = require('lru-memoizer');
+var memoizer = require('@new10com/lru-memoizer');
 
 var memoizedGet = memoizer({
   //defines how to load the resource when
@@ -57,7 +57,7 @@ memoizedGet({
 Use `memoizer.sync` to cache things that are slow to calculate or methods returning promises.
 
 ```
-var memoizer = require('lru-memoizer');
+var memoizer = require('@new10com/lru-memoizer');
 var memoizedGet = memoizer.sync({
   //defines how to load the resource when
   //it is not in the cache.
