@@ -1,3 +1,16 @@
+# @new10com/lru-memoizer
+
+[![NPM version][npm-image]][npm-url]
+[![Release][release-image]][release-url]
+[![Install Size][install-size-image]][install-size-url]
+
+[npm-image]: https://img.shields.io/npm/v/@new10com/lru-memoizer.svg
+[npm-url]: https://www.npmjs.org/package/@new10com/lru-memoizer
+[release-image]: https://img.shields.io/github/release/new10com/lru-memoizer.svg
+[release-url]: https://github.com/new10com/lru-memoizer/releases/latest
+[install-size-image]: https://packagephobia.now.sh/badge?p=@new10com/lru-memoizer
+[install-size-url]: https://packagephobia.now.sh/result?p=@new10com/lru-memoizer
+
 Memoize functions results using an lru-cache.
 
 ## Installation
