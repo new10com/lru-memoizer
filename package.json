@@ -1,7 +1,7 @@
 {
   "name": "@new10com/lru-memoizer",
   "description": "Memoize functions results using an lru-cache.",
-  "version": "1.13.5",
+  "version": "1.13.6",
   "author": "José F. Romaniello <jfromaniello@gmail.com> (http://joseoncode.com)",
   "types": "./types/lru-memoizer.d.ts",
   "license": "MIT",
